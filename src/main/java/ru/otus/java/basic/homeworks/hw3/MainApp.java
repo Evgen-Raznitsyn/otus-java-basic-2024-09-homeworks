@@ -3,10 +3,10 @@ package ru.otus.java.basic.homeworks.hw3;
 public class MainApp {
     public static void main(String[] args) {
         //System.out.println(sumOfPositiveElements(new int[][]{{1, 2, 3}, {4, 0, 6}, {7, 8, 9}}));
-        //square(20);
+        //square(10);
         //zeroingDiagonals(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
         //System.out.println(findMax(new int[][]{{1, 2, 3}, {4, 0, 6}, {7, 8, 9}}));
-        //System.out.println(sumOfTheSecondLine(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}));
+        //System.out.println(sumOfTheSecondLine(new int[][]{{-1, 1, 1, 1}, {1, 2, 3, 1}, {4, 5, 6, 1}, {1, 1, -1, 1}}));
     }
 
     /**
@@ -74,17 +74,20 @@ public class MainApp {
         return max;
     }
 
-
-//    public static int sumOfTheSecondLine(int[][] array) {
-//        int sum = 0;
-//        for (int i = 0; i < array.length; i++) {
-//            for (int j = 0; j < array.length; j++) {
-//                if (j == 2) {
-//                    sum += array[i][j];
-//                }
-//                return -1;
-//            }
-//        }
-//        return sum;
-//    }
+    /**
+     *
+     * @param array входной двумерный массив
+     * @return сумма элементов второй строки
+     */
+    public static int sumOfTheSecondLine(int[][] array) {
+        if (array.length < 2) {
+            return -1;
+        } else {
+            int sum = 0;
+            for (int j = 0; j < array.length; j++) {
+                sum += array[1][j];
+            }
+            return sum;
+        }
+    }
 }
