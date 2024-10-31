@@ -3,7 +3,7 @@ package ru.otus.java.basic.homeworks.hw3;
 public class MainApp {
     public static void main(String[] args) {
         //System.out.println(sumOfPositiveElements(new int[][]{{1, 2, 3}, {4, 0, 6}, {7, 8, 9}}));
-        //square(10);
+        //square(5);
         //zeroingDiagonals(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
         //System.out.println(findMax(new int[][]{{-10, 2, 3}, {4, 0, 6}, {7, 8, 9}}));
         //System.out.println(sumOfTheSecondLine(new int[][]{{-1, 1, 1, 1}, {1, 2, 3, 1}, {4, 5, 6, 1}, {1, 1, -1, 1}}));
@@ -29,11 +29,11 @@ public class MainApp {
      * @param size размер квадрата
      */
     public static void square(int size) {
-        char[][] array = new char[size][size];
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[0].length; j++) {
-                if (i == 0 || j == 0 || i == array[0].length - 1 || j == array[0].length - 1) {
-                    System.out.print((array[i][j] = '*') + "  ");
+
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                if (x == 0 || y == 0 || x == size - 1 || y == size - 1) {
+                    System.out.print("*  ");
                 } else {
                     System.out.print("   ");
                 }
@@ -75,19 +75,18 @@ public class MainApp {
     }
 
     /**
-     *
      * @param array входной двумерный массив
      * @return сумма элементов второй строки
      */
     public static int sumOfTheSecondLine(int[][] array) {
         if (array.length < 2) {
             return -1;
-        } else {
-            int sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[1][j];
-            }
-            return sum;
         }
+        int sum = 0;
+        for (int j = 0; j < array.length; j++) {
+            sum += array[1][j];
+        }
+        return sum;
+
     }
 }
