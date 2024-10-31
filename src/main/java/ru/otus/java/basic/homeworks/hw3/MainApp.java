@@ -5,7 +5,7 @@ public class MainApp {
         //System.out.println(sumOfPositiveElements(new int[][]{{1, 2, 3}, {4, 0, 6}, {7, 8, 9}}));
         //square(10);
         //zeroingDiagonals(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-        //System.out.println(findMax(new int[][]{{1, 2, 3}, {4, 0, 6}, {7, 8, 9}}));
+        //System.out.println(findMax(new int[][]{{-10, 2, 3}, {4, 0, 6}, {7, 8, 9}}));
         //System.out.println(sumOfTheSecondLine(new int[][]{{-1, 1, 1, 1}, {1, 2, 3, 1}, {4, 5, 6, 1}, {1, 1, -1, 1}}));
     }
 
@@ -63,7 +63,7 @@ public class MainApp {
      * @return максимальный элемент массива
      */
     public static int findMax(int[][] array) {
-        int max = 0;
+        int max = array[0][0];
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array.length; j++) {
                 if (array[i][j] > max) {
