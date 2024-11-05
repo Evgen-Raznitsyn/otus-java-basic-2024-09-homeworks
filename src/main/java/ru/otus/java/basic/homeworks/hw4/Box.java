@@ -40,31 +40,33 @@ public class Box {
 
     // Метод для добавления предмета в коробку
     public void putItem(String newItem) {
-        if (isOpen) {
-            if (item == null) {
-                item = newItem;
-                System.out.println("Предмет \"" + newItem + "\" помещён в коробку.");
-            } else {
-                System.out.println("Коробка уже содержит предмет: " + item);
-            }
-        } else {
+        if (!isOpen) {
             System.out.println("Коробка закрыта. Откройте её, чтобы положить предмет.");
+            return;
         }
+        if (item != null) {
+            System.out.println("Коробка уже содержит предмет: " + item);
+            return;
+        }
+        item = newItem;
+        System.out.println("Предмет \"" + newItem + "\" помещён в коробку.");
     }
+
 
     // Метод для удаления предмета из коробки
     public void takeOutItem() {
-        if (isOpen) {
-            if (item != null) {
-                System.out.println("Предмет \"" + item + "\" вытащен из коробки.");
-                item = null;
-            } else {
-                System.out.println("Коробка пуста, нет предмета для извлечения.");
-            }
-        } else {
+        if (!isOpen) {
             System.out.println("Коробка закрыта. Откройте её, чтобы вытащить предмет.");
+            return;
         }
+        if (item == null) {
+            System.out.println("Коробка пуста, нет предмета для извлечения.");
+            return;
+        }
+        System.out.println("Предмет \"" + item + "\" вытащен из коробки.");
+        item = null;
     }
 }
+
 
 
