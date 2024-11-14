@@ -1,5 +1,9 @@
 package ru.otus.java.basic.homeworks.hw5;
 
+import ru.otus.java.basic.homeworks.hw5.animals.Cat;
+import ru.otus.java.basic.homeworks.hw5.animals.Dog;
+import ru.otus.java.basic.homeworks.hw5.animals.Horse;
+
 public class MainApp {
     public static void main(String[] args) {
         Cat cat = new Cat("Кузя", 3, 0, 20);
@@ -22,7 +26,7 @@ public class MainApp {
 
         horse.info();
         horse.run(10);
-        horse.swim(50);
+        horse.swim(5);
         horse.run(10);
         horse.info();
     }

@@ -1,4 +1,6 @@
-package ru.otus.java.basic.homeworks.hw5;
+package ru.otus.java.basic.homeworks.hw5.animals;
+
+import ru.otus.java.basic.homeworks.hw5.Animal;
 
 public class Cat extends Animal {
     public Cat(String name, double runSpeed, double swimSpeed, int endurance) {

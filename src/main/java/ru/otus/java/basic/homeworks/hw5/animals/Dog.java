@@ -1,4 +1,6 @@
-package ru.otus.java.basic.homeworks.hw5;
+package ru.otus.java.basic.homeworks.hw5.animals;
+
+import ru.otus.java.basic.homeworks.hw5.Animal;
 
 public class Dog extends Animal {
     public Dog(String name, double runSpeed, double swimSpeed, int endurance) {
@@ -7,7 +9,7 @@ public class Dog extends Animal {
 
     @Override
     public double swim(int distance) {
-        enduranceCost = distance * 2;
+        swimEndurancePerMeter = 2;
         return super.swim(distance);
     }
 }

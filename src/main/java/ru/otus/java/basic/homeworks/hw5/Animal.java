@@ -1,11 +1,11 @@
 package ru.otus.java.basic.homeworks.hw5;
 
-public class Animal {
-    String name;
+public abstract class Animal {
+    protected String name;
     double runSpeed;
     double swimSpeed;
     int endurance;
-    int enduranceCost;
+    protected int swimEndurancePerMeter;
 
     public Animal(String name, double runSpeed, double swimSpeed, int endurance) {
         this.name = name;
@@ -39,13 +39,13 @@ public class Animal {
             System.out.println(name + " устал(а) и не может плыть.");
             return time;
         }
-        if (endurance < enduranceCost) {
+        if (endurance < distance * swimEndurancePerMeter) {
             System.out.println(name + " не может плыть такую дистанцию. Не хватает выносливости.");
             return time;
         }
         time = distance / swimSpeed;
-        endurance -= enduranceCost;
-        System.out.println(name + " проплыл(а) " + distance + " метров за " + time + " секунд. Было потрачено " + enduranceCost + " выносливости.");
+        endurance -= swimEndurancePerMeter * distance;
+        System.out.println(name + " проплыл(а) " + distance + " метров за " + time + " секунд. Было потрачено " + distance * swimEndurancePerMeter + " выносливости.");
         return time;
     }
 
