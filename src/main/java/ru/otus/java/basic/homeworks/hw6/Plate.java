@@ -10,6 +10,9 @@ public class Plate {
     }
 
     public void addFood(int amount) {
+        if (amount <= 0) {
+            return;
+        }
         if (currentFood + amount <= maxFood) {
             currentFood += amount;
         } else {
@@ -19,6 +22,9 @@ public class Plate {
     }
 
     public boolean decreaseFood(int amount) {
+        if (amount <= 0) {
+            return false;
+        }
         if (currentFood >= amount) {
             currentFood -= amount;
             return true;

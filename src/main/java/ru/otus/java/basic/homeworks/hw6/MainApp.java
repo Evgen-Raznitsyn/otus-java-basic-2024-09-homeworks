@@ -10,52 +10,43 @@ public class MainApp {
                 new Cat("Василий", 12)
         };
 
-        //Опрашиваем котов
         for (Cat cat : cats) {
             String state = cat.isFull() ? " сыт" : " голоден";
             System.out.println(cat.getName() + state);
         }
         System.out.println();
 
-        //Проверяем тарелку
         plate.info();
 
-        //Кормим котов
         for (Cat cat : cats) {
             cat.eat(plate);
         }
         System.out.println("Коты поели");
         System.out.println();
 
-        //Опрашиваем котов
         for (Cat cat : cats) {
             String state = cat.isFull() ? " сыт" : " голоден";
             System.out.println(cat.getName() + state);
         }
         System.out.println();
 
-        //Проверяем тарелку
         plate.info();
 
-        //Добавляем еду в тарелку и проверяем максимум
-        plate.addFood(100);
+        plate.addFood(-100);
         plate.info();
 
-        //Кормим котов
         for (Cat cat : cats) {
             cat.eat(plate);
         }
         System.out.println("Коты поели");
         System.out.println();
 
-        //Опрашиваем котов
         for (Cat cat : cats) {
             String state = cat.isFull() ? " сыт" : " голоден";
             System.out.println(cat.getName() + state);
         }
         System.out.println();
 
-        //Проверяем тарелку
         plate.info();
     }
 }
