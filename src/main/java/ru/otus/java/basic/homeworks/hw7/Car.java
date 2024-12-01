@@ -8,6 +8,10 @@ public class Car implements Transport {
         this.fuel = fuel;
     }
 
+    public String getTransportName() {
+        return "Машина";
+    }
+
     @Override
     public boolean move(double distance, Terrain terrain) {
         if (fuel <= 0) {
@@ -23,7 +27,7 @@ public class Car implements Transport {
             return false;
         }
         fuel -= distance * 0.06;
-        System.out.println(driver.name + " на машине проехал " + distance + " километров по " + terrain.getTitle());
+        System.out.println(driver.getName() + " на машине проехал " + distance + " километров по " + terrain.getTitle());
         return true;
     }
 

@@ -9,6 +9,11 @@ class Horse implements Transport {
     }
 
     @Override
+    public String getTransportName() {
+        return "Лошадь";
+    }
+
+    @Override
     public boolean move(double distance, Terrain terrain) {
         if (terrain == Terrain.SWAMP) {
             System.out.println("Лошадь не может перемещаться по болоту");
@@ -19,7 +24,7 @@ class Horse implements Transport {
             return false;
         }
         endurance -= distance * 5;
-        System.out.println(driver.name + " верхом на лошади проскакал " + distance + " километров по " + terrain.getTitle());
+        System.out.println(driver.getName() + " верхом на лошади проскакал " + distance + " километров по " + terrain.getTitle());
         return true;
     }
 

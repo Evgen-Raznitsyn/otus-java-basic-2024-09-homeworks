@@ -1,40 +1,40 @@
 package ru.otus.java.basic.homeworks.hw7;
 
 class Human {
-    String name;
+    private String name;
     private Transport currentTransport;
-    double endurance;
+    private double endurance;
 
     public Human(String name, double endurance) {
         this.name = name;
         this.endurance = endurance;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public double getEndurance() {
+        return endurance;
+    }
+
+    public void setEndurance(double endurance) {
+        this.endurance = endurance;
+    }
+
     public void sit(Transport transport) {
-        if (currentTransport != null){
-            this.currentTransport = transport;
-            transport.setDriver(this);
-            switch (currentTransport.getClass().getSimpleName()) {
-                case "Car" -> System.out.println(name + " пересел в машину");
-                case "Horse" -> System.out.println(name + " пересел на лошадь");
-                case "Bicycle" -> System.out.println(name + " пересел на велосипед");
-                case "AllTerrainVehicle" -> System.out.println(name + " пересел в вездеход");
-                default -> throw new IllegalStateException("Unexpected value: " + currentTransport.getClass().getSimpleName());
-            }
-            return;
+        if (currentTransport != null) {
+            currentTransport.setDriver(null);
+            System.out.println(name + " пересел с " + currentTransport.getTransportName() + " на " + transport.getTransportName());
+        } else {
+            System.out.println(name + " сел на " + transport.getTransportName());
         }
         this.currentTransport = transport;
         transport.setDriver(this);
-        switch (currentTransport.getClass().getSimpleName()) {
-            case "Car" -> System.out.println(name + " сел в машину");
-            case "Horse" -> System.out.println(name + " сел на лошадь");
-            case "Bicycle" -> System.out.println(name + " сел на велосипед");
-            case "AllTerrainVehicle" -> System.out.println(name + " сел в вездеход");
-            default -> throw new IllegalStateException("Unexpected value: " + currentTransport.getClass().getSimpleName());
-        }
     }
 
     public void stand() {
+        currentTransport.setDriver(null);
         System.out.println(name + " спешился");
         this.currentTransport = null;
     }
@@ -42,11 +42,10 @@ class Human {
     public boolean move(double distance, Terrain terrain) {
         if (currentTransport != null) {
             return currentTransport.move(distance, terrain);
-        } else {
-            endurance -= distance;
-            System.out.println(name + " идет пешком " + distance + " километров по " + terrain.getTitle());
-            return true;
         }
+        endurance -= distance;
+        System.out.println(name + " идет пешком " + distance + " километров по " + terrain.getTitle());
+        return true;
     }
 
     public void getInfo() {
