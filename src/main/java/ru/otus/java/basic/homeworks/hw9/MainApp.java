@@ -7,7 +7,7 @@ import static ru.otus.java.basic.homeworks.hw9.Employee.*;
 public class MainApp {
     public static void main(String[] args) {
 
-        ArrayList<Integer> result = range(-10, 10);
+        List<Integer> result = range(-10, 10);
         System.out.println("Диапазон значений: " + result);
         System.out.println();
 
@@ -40,13 +40,10 @@ public class MainApp {
         getEmployeeYoung(employees);
     }
 
-    public static ArrayList<Integer> range(int min, int max) {
-        ArrayList<Integer> rangeList = new ArrayList<>();
-        if (min <= max) {
-            for (int i = min; i <= max; i++) {
-                rangeList.add(i);
-            }
-            return rangeList;
+    public static List<Integer> range(int min, int max) {
+        List<Integer> rangeList = new ArrayList<>();
+        for (int i = min; i <= max; i++) {
+            rangeList.add(i);
         }
         return rangeList;
     }

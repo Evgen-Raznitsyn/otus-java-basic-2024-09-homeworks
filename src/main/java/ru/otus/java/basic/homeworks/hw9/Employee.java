@@ -20,30 +20,26 @@ public class Employee {
     }
 
     public static void getEmployeeNames(List<Employee> employees) {
-        List<String> names = new ArrayList<>();
-        for (Employee employee : employees) {
-            names.add(employee.getName());
-        }
         if (employees.isEmpty()) {
             System.out.println("Список сотрудников пуст");
-        } else {
-            System.out.println("Имена сотрудников: " + names);
+            return;
         }
+        List<String> names = employees.stream().map(Employee::getName).toList();
+        System.out.println("Имена сотрудников: " + names);
     }
 
     public static void getEmployeeAge(List<Employee> employees, int minAge) {
+        if (employees.isEmpty()) {
+            System.out.println("Список сотрудников пуст");
+            return;
+        }
         List<String> names = new ArrayList<>();
         for (Employee employee : employees) {
             if (employee.getAge() >= minAge) {
                 names.add(employee.getName());
             }
         }
-        if (employees.isEmpty()) {
-            System.out.println("Список сотрудников пуст");
-        } else {
-            System.out.printf("Имена сотрудников, старше %d: %s\n", minAge, names);
-        }
-
+        System.out.printf("Имена сотрудников, старше %d: %s\n", minAge, names);
     }
 
     public static void isAverageAge(List<Employee> employees, double minAverageAge) {
@@ -64,11 +60,11 @@ public class Employee {
     }
 
     public static void getEmployeeYoung(List<Employee> employees) {
-        if (employees.isEmpty()){
+        if (employees.isEmpty()) {
             System.out.println("Список сотрудников пуст");
             return;
         }
-        Employee youngest = employees.get(0);
+        Employee youngest = employees.getFirst();
         for (Employee employee : employees) {
             if (employee.getAge() < youngest.getAge()) {
                 youngest = employee;
