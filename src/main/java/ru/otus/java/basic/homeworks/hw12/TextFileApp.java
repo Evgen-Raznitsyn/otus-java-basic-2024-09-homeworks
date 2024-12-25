@@ -17,10 +17,7 @@ public class TextFileApp {
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("Список текстовых файлов в каталоге " + FILE_DIRECTORY + ":");
-            for (int i = 0; i < textFiles.size(); i++) {
-                System.out.println((i + 1) + ". " + textFiles.get(i));
-            }
+            displayTextFiles(textFiles);
 
             System.out.print("Введите номер файла, с которым хотите работать (или 0 для выхода): ");
             int fileIndex = scanner.nextInt() - 1;
@@ -37,15 +34,17 @@ public class TextFileApp {
 
             String selectedFile = FILE_DIRECTORY + textFiles.get(fileIndex);
             System.out.println("Содержимое файла '" + textFiles.get(fileIndex) + "':");
-            System.out.println(readFile(selectedFile));
-
-            System.out.print("Введите строку для записи в файл: ");
-            String userInput = scanner.nextLine();
-            writeToFile(selectedFile, userInput);
-            System.out.println("Строка успешно записана в файл.");
+            readFile(selectedFile);
+            writeToFile(selectedFile);
         }
-
         System.out.println("Выход из программы.");
+    }
+
+    private static void displayTextFiles(List<String> textFiles) {
+        System.out.println("Список текстовых файлов в каталоге " + FILE_DIRECTORY + ":");
+        for (int i = 0; i < textFiles.size(); i++) {
+            System.out.println((i + 1) + ". " + textFiles.get(i));
+        }
     }
 
     private static List<String> listTextFiles() {
@@ -60,27 +59,30 @@ public class TextFileApp {
         return files;
     }
 
-    private static String readFile(String fileName) {
-        StringBuilder content = new StringBuilder();
+    private static void readFile(String fileName) {
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileName));
              InputStreamReader isr = new InputStreamReader(bis)) {
-            int charRead;
-            while ((charRead = isr.read()) != -1) {
-                content.append((char) charRead);
+            int charRead = isr.read();
+            while (charRead != -1) {
+                System.out.print((char) charRead);
+                charRead = isr.read();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return content.toString();
     }
 
-    private static void writeToFile(String fileName, String text) {
+    private static void writeToFile(String fileName) {
+        System.out.print("Введите строку для записи в файл: ");
+        Scanner scanner = new Scanner(System.in);
+        String text = scanner.nextLine();
         try (BufferedOutputStream bw = new BufferedOutputStream(new FileOutputStream(fileName, true))) {
-            byte [] buffer = text.getBytes(StandardCharsets.UTF_8);
+            byte[] buffer = text.getBytes(StandardCharsets.UTF_8);
             bw.write(buffer);
             bw.write(System.lineSeparator().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Строка успешно записана в файл.");
     }
 }
