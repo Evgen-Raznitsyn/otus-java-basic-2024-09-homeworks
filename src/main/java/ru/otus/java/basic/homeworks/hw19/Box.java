@@ -1,26 +1,16 @@
 package ru.otus.java.basic.homeworks.hw19;
 
-import java.util.ArrayList;
+import java.util.*;
 
-public class Box <T extends Fruit> {
-    private ArrayList<T> fruits;
-    private String type;
+public class Box<T extends Fruit> {
+    private final List<T> fruits = new ArrayList<>();
 
-    public Box(String type) {
-        this.fruits = new ArrayList<>();
-        this.type = type;
+    public void add(T fruit) {
+        fruits.add(fruit);
     }
 
-    public void addFruit(T fruit) {
-        if (type.equals("Apple") && fruit instanceof Apple) {
-            fruits.add(fruit);
-        } else if (type.equals("Orange") && fruit instanceof Orange) {
-            fruits.add(fruit);
-        } else if (type.equals("Mixed")) {
-            fruits.add(fruit);
-        } else {
-            System.out.println("Нельзя добавить фрукт этого типа в коробку " + type);
-        }
+    public void addFruit(List<? extends T> fruitsList) {
+        fruits.addAll(fruitsList);
     }
 
     public double weight() {
@@ -32,17 +22,16 @@ public class Box <T extends Fruit> {
     }
 
     public boolean compare(Box<?> otherBox) {
-        return Math.abs(this.weight() - otherBox.weight()) < 0.0001 ;
+        return Math.abs(this.weight() - otherBox.weight()) < 0.0001;
     }
 
-    public void pourTo(Box<T> otherBox) {
-        for (T fruit : fruits) {
-            otherBox.addFruit(fruit);
+    public void pourTo(Box<? super T> otherBox) {
+        if (otherBox == this) {
+            System.out.println("Коробку нельзя пересыпать саму в себя");
+            return;
         }
+        Collections.reverse(fruits);
+        otherBox.addFruit(fruits);
         fruits.clear();
-    }
-
-    public String getType() {
-        return type;
     }
 }
