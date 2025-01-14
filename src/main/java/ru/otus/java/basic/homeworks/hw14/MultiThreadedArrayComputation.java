@@ -8,7 +8,7 @@ public class MultiThreadedArrayComputation {
     public static void main(String[] args) {
         double[] array = new double[SIZE];
 
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
 
         Thread[] threads = new Thread[NUM_THREADS];
         for (int i = 0; i < NUM_THREADS; i++) {
@@ -25,13 +25,16 @@ public class MultiThreadedArrayComputation {
 
         for (int i = 0; i < NUM_THREADS; i++) {
             try {
-                threads[i].join();
+                for (Thread thread : threads) {
+                    thread.join();
+                }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
+                System.err.println("Ожидание потока было прервано: " + e.getMessage());
             }
         }
 
-        long endTime = System.currentTimeMillis();
+        long endTime = System.nanoTime();
 
         long duration = endTime - startTime;
         System.out.println("Время выполнения с 4 потоками: " + duration + " миллисекунд");

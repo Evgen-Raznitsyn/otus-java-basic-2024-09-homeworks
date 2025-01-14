@@ -5,13 +5,13 @@ public class ArrayComputation {
         int size = 100_000_000;
         double[] array = new double[size];
 
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
 
         for (int i = 0; i < size; i++) {
             array[i] = 1.14 * Math.cos(i) * Math.sin(i * 0.2) * Math.cos(i / 1.2);
         }
 
-        long endTime = System.currentTimeMillis();
+        long endTime = System.nanoTime();
 
         long duration = endTime - startTime;
         System.out.println("Время выполнения: " + duration + " миллисекунд");
