@@ -33,6 +33,7 @@ public class CalculatorClient {
                 System.out.println("Результат: " + result);
             }
         } catch (IOException e) {
+            System.err.println("Ошибка при работе с сокетом: " + e.getMessage());
             e.printStackTrace();
         }
     }

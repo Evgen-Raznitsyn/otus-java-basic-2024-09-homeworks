@@ -23,10 +23,14 @@ public class CalculatorServer {
         String[] parts = request.split(" ");
         double result;
 
-        if (parts.length == 2 && parts[0].equalsIgnoreCase("sqrt")) {
-            double num = Double.parseDouble(parts[1]);
-            result = Math.sqrt(num);
-            return String.valueOf(result);
+        if (parts.length == 2 && "sqrt".equalsIgnoreCase(parts[0])) {
+            try {
+                double num = Double.parseDouble(parts[1]);
+                result = Math.sqrt(num);
+                return String.valueOf(result);
+            } catch (NumberFormatException e) {
+                return "Ошибка: Неверное число";
+            }
         }
 
         if (parts.length != 3) {
