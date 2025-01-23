@@ -7,17 +7,18 @@ public class ThreadPoolExample {
     private static int count = 0;
 
     public static void main(String[] args) {
-        ExecutorService executor = Executors.newFixedThreadPool(3);
+        try (ExecutorService executor = Executors.newFixedThreadPool(3)) {
 
-        Runnable taskA = () -> printLetter('A', 5);
-        Runnable taskB = () -> printLetter('B', 5);
-        Runnable taskC = () -> printLetter('C', 5);
+            Runnable taskA = () -> printLetter('A', 5);
+            Runnable taskB = () -> printLetter('B', 5);
+            Runnable taskC = () -> printLetter('C', 5);
 
-        executor.submit(taskA);
-        executor.submit(taskB);
-        executor.submit(taskC);
+            executor.submit(taskA);
+            executor.submit(taskB);
+            executor.submit(taskC);
 
-        executor.shutdown();
+            executor.shutdown();
+        }
     }
 
     private static void printLetter(char letter, int times) {
@@ -27,7 +28,8 @@ public class ThreadPoolExample {
                     try {
                         lock.wait();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException(e);
                     }
                 }
                 System.out.print(letter);
@@ -39,10 +41,14 @@ public class ThreadPoolExample {
 
     private static int getLetterIndex(char letter) {
         switch (letter) {
-            case 'A': return 0;
-            case 'B': return 1;
-            case 'C': return 2;
-            default: throw new IllegalArgumentException("Invalid letter: " + letter);
+            case 'A':
+                return 0;
+            case 'B':
+                return 1;
+            case 'C':
+                return 2;
+            default:
+                throw new IllegalArgumentException("Invalid letter: " + letter);
         }
     }
 }
