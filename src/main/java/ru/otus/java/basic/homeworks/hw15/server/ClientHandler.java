@@ -25,7 +25,6 @@ public class ClientHandler {
                 requestUsername();
                 handleMessages();
             } catch (IOException e) {
-                //    e.printStackTrace();
                 System.out.println("Ошибка: " + e.getMessage());
             } finally {
                 disconnect();
@@ -41,14 +40,13 @@ public class ClientHandler {
             if (server.isUsernameUnique(requestedUsername)) {
                 username = requestedUsername;
                 sendMsg("Добро пожаловать, " + username + "!\n/help, чтобы ознакомиться с командами");
-                server.subscribe(this); // Подписываем клиента только если уникальное имя
+                server.subscribe(this);
                 sendActiveUsers();
                 break;
             } else {
                 sendMsg("Имя пользователя уже занято. Пожалуйста, выберите другое.");
             }
         }
-
     }
 
     private void handleMessages() {

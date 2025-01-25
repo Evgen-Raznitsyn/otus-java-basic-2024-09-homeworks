@@ -16,9 +16,9 @@ public class Client {
     public Client() throws IOException {
         scanner = new Scanner(System.in);
         try {
-        socket = new Socket("localhost", 8189);
-        out = new DataOutputStream(socket.getOutputStream());
-        in = new DataInputStream(socket.getInputStream());
+            socket = new Socket("localhost", 8189);
+            out = new DataOutputStream(socket.getOutputStream());
+            in = new DataInputStream(socket.getInputStream());
         } catch (ConnectException e) {
             System.out.println("Сервер не запущен");
             return;
@@ -35,8 +35,8 @@ public class Client {
                         System.out.println(message);
                     }
                 }
-            } catch (IOException  e) {
-               e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             } finally {
                 disconnect();
             }
@@ -51,13 +51,13 @@ public class Client {
         }
     }
 
-           public void disconnect() {
-            try {
-                if (in != null) in.close();
-                if (out != null) out.close();
-                if (socket != null) socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public void disconnect() {
+        try {
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (socket != null) socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
 }

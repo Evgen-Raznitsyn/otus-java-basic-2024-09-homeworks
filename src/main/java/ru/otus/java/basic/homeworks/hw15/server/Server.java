@@ -16,12 +16,12 @@ public class Server {
         clients = new CopyOnWriteArrayList<>();
     }
 
-    public void start(){
+    public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Сервер запущен на порту: " + port);
             while (true) {
                 Socket socket = serverSocket.accept();
-              new ClientHandler(socket, this);
+                new ClientHandler(socket, this);
             }
 
         } catch (IOException e) {
@@ -29,17 +29,17 @@ public class Server {
         }
     }
 
-    public synchronized void subscribe(ClientHandler clientHandler){
+    public synchronized void subscribe(ClientHandler clientHandler) {
         clients.add(clientHandler);
-        broadcastMessage("В чат вошел: " + clientHandler.getUsername(),clientHandler);
+        broadcastMessage("В чат вошел: " + clientHandler.getUsername(), clientHandler);
     }
 
-    public synchronized void unsubscribe(ClientHandler clientHandler){
+    public synchronized void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
-        broadcastMessage("Из чата вышел: "+ clientHandler.getUsername(),clientHandler);
+        broadcastMessage("Из чата вышел: " + clientHandler.getUsername(), clientHandler);
     }
 
-    public void broadcastMessage(String message, ClientHandler sender){
+    public void broadcastMessage(String message, ClientHandler sender) {
         for (ClientHandler client : clients) {
             if (client != sender) {
                 client.sendMsg(message);
