@@ -1,24 +1,62 @@
 package ru.otus.java.basic.homeworks.hw22;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ArrayUtilsTest {
+public class ArrayUtilsTest {
+    private ArrayUtils arrayUtils;
 
-    @Test
-    void getElementsAfterLastOne() {
-        assertArrayEquals(new int[]{2, 2}, ArrayUtils.getElementsAfterLastOne(new int[]{1, 2, 1, 2, 2}));
-        assertArrayEquals(new int[]{}, ArrayUtils.getElementsAfterLastOne(new int[]{1}));
-        assertThrows(RuntimeException.class, () -> ArrayUtils.getElementsAfterLastOne(new int[]{2, 2, 2, 2}));
+    @BeforeEach
+    public void setUp() {
+        arrayUtils = new ArrayUtils();
     }
 
-    @Test
-    void isArrayValid() {
-        assertTrue(ArrayUtils.isArrayValid(new int[]{1, 2}));
-        assertFalse(ArrayUtils.isArrayValid(new int[]{1, 1}));
-        assertFalse(ArrayUtils.isArrayValid(new int[]{1, 3}));
-        assertTrue(ArrayUtils.isArrayValid(new int[]{1, 2, 2, 1}));
-        assertFalse(ArrayUtils.isArrayValid(new int[]{3, 4, 5}));
+    @ParameterizedTest
+    @CsvSource({
+            "'1, 2, 1, 2, 2', '2, 2'",
+            "'1', ''",
+            "'2, 2, 2, 2', exception"
+    })
+    void getElementsAfterLastOne(String input, String expected) {
+        int[] inputArray = Arrays.stream(input.split(", "))
+                .mapToInt(Integer::parseInt)
+                .toArray();
+
+        if ("exception".equals(expected)) {
+            assertThrows(RuntimeException.class, () -> arrayUtils.getElementsAfterLastOne(inputArray));
+        } else {
+            int[] expectedArray = expected.isEmpty() ? new int[0] :
+                    Arrays.stream(expected.split(", "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+            assertArrayEquals(expectedArray, arrayUtils.getElementsAfterLastOne(inputArray));
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 2, true",
+            "1, 1, false",
+            "1, 3, false",
+            "1, 2, 2, 1, true",
+            "3, 4, 5, false",
+            "1, 1, 2, true",
+            "2, 2, 1, true",
+            "2, 3, false",
+            "0, 1, 2, false",
+            "1, 1, 1, false",
+            "2, 2, 2, false",
+            "2, 2, 2, 1, true"
+    })
+    void isArrayValid(String input, boolean expected) {
+        int[] inputArray = Arrays.stream(input.split(", "))
+                .mapToInt(Integer::parseInt)
+                .toArray();
+        assertEquals(expected, arrayUtils.isArrayValid(inputArray));
     }
 }
