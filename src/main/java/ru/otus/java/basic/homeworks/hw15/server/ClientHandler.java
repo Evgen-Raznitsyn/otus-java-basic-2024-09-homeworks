@@ -88,7 +88,8 @@ public class ClientHandler {
 
         ClientHandler targetClient = server.findClientByUsername(targetUsername);
         if (targetClient != null) {
-            targetClient.sendMsg("Privat от " + username + ": " + privateMessage);
+            targetClient.sendMsg("Личное сообщение от " + username + ": " + privateMessage);
+            sendMsg("Личное сообщение пользователю " + targetUsername + " отправлено");
         } else {
             sendMsg("Пользователь " + targetUsername + " не найден.");
         }
