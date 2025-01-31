@@ -83,8 +83,8 @@ public class ClientHandler {
                         sendMsg("Неверный формат команды /kick. Используйте: /kick <имя>");
                         continue;
                     }
-                    sendMsg("Пользователь " + element[1] + " был отключен от чата администратором.");
                     server.kickUser(element[1]);
+                    sendMsg("Пользователь " + element[1] + " был отключен от чата администратором.");
                 } else {
                     sendMsg("У вас нет прав для выполнения этой команды.");
                 }
