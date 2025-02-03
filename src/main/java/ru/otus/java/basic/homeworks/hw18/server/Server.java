@@ -87,12 +87,15 @@ public class Server {
     public synchronized boolean isUserActive(String username) {
         return activeUsernames.contains(username);
     }
+
     public synchronized void addActiveUser(String username) {
         activeUsernames.add(username);
     }
+
     public synchronized void removeActiveUser(String username) {
         activeUsernames.remove(username);
     }
+
     public void logout(ClientHandler clientHandler) {
         String username = clientHandler.getUsername();
         if (clientHandler.getUsername().equals(username)) {

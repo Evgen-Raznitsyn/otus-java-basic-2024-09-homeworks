@@ -2,11 +2,18 @@ package ru.otus.java.basic.homeworks.hw18.server;
 
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
     private static final String REGISTRATION_QUERY = "INSERT INTO users (login, password, username) VALUES (?, ?, ?)";
     private static final String AUTHENTICATION_QUERY = "SELECT password, id,username FROM users WHERE login = ?";
+    private static final String GET_ROLE_QUERY = "SELECT r.name FROM roles r JOIN users_to_roles ur ON r.id = ur.role_id WHERE ur.user_id = ?";
+    private static final String REMOVE_ADMIN_QUERY = "DELETE FROM users_to_roles " +
+            "WHERE user_id = (SELECT id FROM users WHERE username = ?) " +
+            "AND role_id = (SELECT id FROM roles WHERE name = 'admin')";
+    private static final String GET_USER_ID_QUERY = "SELECT id FROM users WHERE username = ?";
+    private static final String SET_ROLE_FOR_USER_QUERY = "INSERT INTO users_to_roles (user_id, role_id) VALUES (?, ?)";
+    private static final String ROLE_EXISTS_QUERY = "SELECT COUNT(*) FROM users_to_roles WHERE user_id = ? AND role_id = (SELECT id FROM roles WHERE name = ?)";
+    private static final String IS_USERNAME_TAKEN_QUERY = "SELECT COUNT(*) FROM users WHERE login = ? OR username = ?";
     private Server server;
     private final Connection connection;
 
@@ -37,12 +44,10 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         if (server.isUserActive(username)) {
             clientHandler.sendMsg("Пользователь уже аутентифицирован на другом устройстве.");
             return false;
         }
-
         if (dbPassword == null || !dbPassword.equals(password)) {
             clientHandler.sendMsg("Неверный логин/пароль");
             return false;
@@ -60,14 +65,44 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
             clientHandler.sendMsg("У вас нет прав для входа.");
             return false;
         }
-
         return true;
+    }
+
+    @Override
+    public boolean registration(ClientHandler clientHandler, String login, String password, String username) {
+        Roles role = Roles.USER;
+        if (login.length() < 3 || password.length() < 3 || username.length() < 3) {
+            clientHandler.sendMsg("Логин 3+ символа, пароль 3+ символа, имя пользователя 3+ символа");
+            return false;
+        }
+        String availabilityMessage = checkUsernameAvailability(login, username);
+        if (availabilityMessage != null) {
+            clientHandler.sendMsg(availabilityMessage);
+            return false;
+        }
+        try (PreparedStatement ps = connection.prepareStatement(REGISTRATION_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, login);
+            ps.setString(2, password);
+            ps.setString(3, username);
+            ps.executeUpdate();
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int userId = generatedKeys.getInt(1);
+                setRoleForUser(userId, role);
+                clientHandler.setUsername(username);
+                clientHandler.setRole(role);
+                clientHandler.sendMsg("/regok " + username);
+                return true;
+            }
+        } catch (SQLException e) {
+            clientHandler.sendMsg("Ошибка регистрации: " + e.getMessage());
+        }
+        return false;
     }
 
     private List<Roles> getRoleForUser(int userId) {
         List<Roles> roles = new ArrayList<>();
-        String query = "SELECT r.name FROM roles r JOIN users_to_roles ur ON r.id = ur.role_id WHERE ur.user_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (PreparedStatement ps = connection.prepareStatement(GET_ROLE_QUERY)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -81,41 +116,6 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
         return roles;
     }
 
-    @Override
-    public boolean registration(ClientHandler clientHandler, String login, String password, String username) {
-        Roles role = Roles.USER; // Роль для обычных пользователей
-        if (login.length() < 3 || password.length() < 3 || username.length() < 3) {
-            clientHandler.sendMsg("Логин 3+ символа, пароль 3+ символа, имя пользователя 3+ символа");
-            return false;
-        }
-
-        String availabilityMessage = checkUsernameAvailability(login, username);
-        if (availabilityMessage != null) {
-            clientHandler.sendMsg(availabilityMessage);
-            return false;
-        }
-        try (PreparedStatement ps = connection.prepareStatement(REGISTRATION_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, login);
-            ps.setString(2, password);
-            ps.setString(3, username);
-            ps.executeUpdate();
-
-            ResultSet generatedKeys = ps.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int userId = generatedKeys.getInt(1);
-                setRoleForUser(userId, role);
-                clientHandler.setUsername(username);
-                clientHandler.setRole(role);
-                clientHandler.sendMsg("/regok " + username);
-                return true;
-            }
-        } catch (SQLException e) {
-            clientHandler.sendMsg("Ошибка регистрации: " + e.getMessage());
-        }
-
-        return false;
-    }
-
     public boolean addAdmin(ClientHandler clientHandler, String username, ClientHandler newAdminHandler) {
         Roles roles = clientHandler.getRole();
         if (roles != Roles.ADMIN) {
@@ -127,12 +127,10 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
             clientHandler.sendMsg("Пользователь с таким именем не найден.");
             return false;
         }
-
         if (roleExists(userId, Roles.ADMIN)) {
             clientHandler.sendMsg("Пользователь " + username + " уже имеет роль администратора.");
             return false;
         }
-
         try {
             setRoleForUser(userId, Roles.ADMIN);
             clientHandler.sendMsg("Пользователь " + username + " успешно добавлен как администратор.");
@@ -158,17 +156,11 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
             clientHandler.sendMsg("Пользователь с таким именем не найден.");
             return false;
         }
-
         if (!roleExists(userId, Roles.ADMIN)) {
             clientHandler.sendMsg("У пользователя " + username + " нет роли администратора.");
             return false;
         }
-
-        String query = "DELETE FROM users_to_roles " +
-                "WHERE user_id = (SELECT id FROM users WHERE username = ?) " +
-                "AND role_id = (SELECT id FROM roles WHERE name = 'admin')";
-
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (PreparedStatement pstmt = connection.prepareStatement(REMOVE_ADMIN_QUERY)) {
             pstmt.setString(1, username);
             clientHandler.sendMsg("Роль администратора у пользователя " + username + " успешно удалена.");
             int affectedRows = pstmt.executeUpdate();
@@ -184,7 +176,7 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
     }
 
     private int getUserIdByUsername(String username) {
-        try (PreparedStatement ps = connection.prepareStatement("SELECT id FROM users WHERE username = ?")) {
+        try (PreparedStatement ps = connection.prepareStatement(GET_USER_ID_QUERY)) {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -197,7 +189,7 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
     }
 
     void setRoleForUser(int userId, Roles role) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement("INSERT INTO users_to_roles (user_id, role_id) VALUES (?, ?)")) {
+        try (PreparedStatement ps = connection.prepareStatement(SET_ROLE_FOR_USER_QUERY)) {
             ps.setInt(1, userId);
             ps.setInt(2, role.ordinal() + 1);
             ps.executeUpdate();
@@ -207,7 +199,6 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
     private String checkUsernameAvailability(String login, String username) {
         boolean isLoginTaken = isUsernameTaken(login);
         boolean isUsernameTaken = isUsernameTaken(username);
-
         if (isLoginTaken && isUsernameTaken) {
             return "Логин и имя пользователя уже заняты!";
         } else if (isLoginTaken) {
@@ -219,8 +210,7 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
     }
 
     private boolean roleExists(int userId, Roles role) {
-        String query = "SELECT COUNT(*) FROM users_to_roles WHERE user_id = ? AND role_id = (SELECT id FROM roles WHERE name = ?)";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (PreparedStatement ps = connection.prepareStatement(ROLE_EXISTS_QUERY)) {
             ps.setInt(1, userId);
             ps.setString(2, role.name().toLowerCase());
             ResultSet rs = ps.executeQuery();
@@ -234,8 +224,7 @@ public class DatabaseAuthenticatedProvider implements AuthenticatedProvider {
     }
 
     private boolean isUsernameTaken(String username) {
-        String query = "SELECT COUNT(*) FROM users WHERE login = ? OR username = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (PreparedStatement ps = connection.prepareStatement(IS_USERNAME_TAKEN_QUERY)) {
             ps.setString(1, username);
             ps.setString(2, username);
             try (ResultSet rs = ps.executeQuery()) {

@@ -15,7 +15,6 @@ public class ClientHandler {
     private Roles role;
     public boolean isAuthenticated = false;
 
-
     public ClientHandler(Socket socket, Server server) throws IOException {
         this.socket = socket;
         this.server = server;
@@ -39,6 +38,22 @@ public class ClientHandler {
         }).start();
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setRole(Roles role) {
+        this.role = role;
+    }
+
+    public Roles getRole() {
+        return role;
+    }
+
     private void authenticate() throws IOException {
         while (!isAuthenticated) {
             if (server == null) {
@@ -47,7 +62,6 @@ public class ClientHandler {
             }
             sendMsg("Для начала работы надо пройти аутентификацию. Формат команды /auth <логин> <пароль> \n" +
                     "или регистрацию. Формат команды /reg <логин> <пароль> <имя>");
-
             String message = in.readUTF();
             if (message.startsWith("/")) {
                 if (message.equalsIgnoreCase("/exit")) {
@@ -60,7 +74,6 @@ public class ClientHandler {
                         sendMsg("Неверный формат команды /auth. Используйте: /auth <логин> <пароль>");
                         continue;
                     }
-
                     if (server.getAuthenticatedProvider().authenticate(this, elements[1], elements[2])) {
                         isAuthenticated = true;
                         sendMsg("Вы успешно аутентифицированы. Ваша текущая роль: " + role + ".\n" +
@@ -94,8 +107,7 @@ public class ClientHandler {
                         continue;
                     }
                     String usernameToKick = element[1];
-                    // Проверяем, не пытается ли администратор отключить себя
-                    if (usernameToKick.equals(this.username)) { // Предполагается, что this.username хранит имя текущего администратора
+                    if (usernameToKick.equals(this.username)) {
                         sendMsg("Вы не можете отключить самого себя!");
                         continue;
                     }
@@ -117,7 +129,7 @@ public class ClientHandler {
                     }
                     String newAdminName = element[1];
                     ClientHandler newAdminHandler = server.findClientByUsername(newAdminName);
-                    server.getAuthenticatedProvider().addAdmin(this, newAdminName,newAdminHandler);
+                    server.getAuthenticatedProvider().addAdmin(this, newAdminName, newAdminHandler);
 
                     if (newAdminHandler != null) {
                         newAdminHandler.setRole(Roles.ADMIN);
@@ -126,22 +138,22 @@ public class ClientHandler {
                     sendMsg("У вас нет прав для выполнения этой команды.");
                 }
             } else if (message.startsWith("/remove_admin ")) {
-                if (this.role == Roles.ADMIN) { // Проверяем, является ли текущий пользователь администратором
+                if (this.role == Roles.ADMIN) {
                     String[] element = message.split(" ");
                     if (element.length != 2 || element[1].trim().isEmpty()) {
                         sendMsg("Неверный формат команды. Используйте: /remove_admin <username>");
                         continue;
                     }
                     String usernameToRemove = element[1];
-                    ClientHandler clientToRemove  = server.findClientByUsername(usernameToRemove);
-                    server.getAuthenticatedProvider().removeAdminRole(this,usernameToRemove,clientToRemove );
+                    ClientHandler clientToRemove = server.findClientByUsername(usernameToRemove);
+                    server.getAuthenticatedProvider().removeAdminRole(this, usernameToRemove, clientToRemove);
                     if (clientToRemove != null) {
                         clientToRemove.setRole(Roles.USER);
                     }
                 } else {
                     sendMsg("У вас нет прав для выполнения этой команды.");
                 }
-            }else if (message.startsWith("/w ")) {
+            } else if (message.startsWith("/w ")) {
                 sendPrivateMessage(message);
             } else if (message.equalsIgnoreCase("/users")) {
                 sendActiveUsers();
@@ -211,21 +223,6 @@ public class ClientHandler {
         }
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setRole(Roles role) {
-        this.role = role;
-    }
-    public Roles getRole() {
-        return role;
-    }
-
     private void sendHelpMessage() {
         String helpMessage = "Доступные команды:\n" +
                 "/users - показать текущих пользователей в чате\n" +
@@ -240,7 +237,4 @@ public class ClientHandler {
         }
         sendMsg(helpMessage);
     }
-
-
-
 }

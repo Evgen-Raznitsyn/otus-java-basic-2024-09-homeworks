@@ -33,8 +33,8 @@ public class Client {
                     processServerMessage(message);
                 }
             } catch (IOException e) {
-                    System.out.printf("Не удалось установить соединение с сервером.\n" +
-                            "Пожалуйста, проверьте, запущен ли сервер и доступен ли он по адресу %s:%s.", host, port);
+                System.out.printf("Не удалось установить соединение с сервером.\n" +
+                        "Пожалуйста, проверьте, запущен ли сервер и доступен ли он по адресу %s:%s.", host, port);
             } finally {
                 disconnect();
             }
@@ -49,7 +49,6 @@ public class Client {
                 System.out.println("Вы были отключены от чата администратором.");
                 break;
             }
-
             try {
                 out.writeUTF(message);
             } catch (IOException e) {
@@ -58,6 +57,7 @@ public class Client {
             }
         }
     }
+
     private void processServerMessage(String message) throws IOException {
         if (message.startsWith("/")) {
             switch (message) {
