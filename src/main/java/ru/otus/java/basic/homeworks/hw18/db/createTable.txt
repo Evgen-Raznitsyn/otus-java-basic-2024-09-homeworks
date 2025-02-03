@@ -1,0 +1,19 @@
+CREATE TABLE public.roles (
+	id serial4 NOT NULL,
+	"name" varchar(255) NOT NULL,
+	CONSTRAINT roles_pkey PRIMARY KEY (id)
+);
+
+create table users(
+id serial primary key,
+password varchar(255) not null,
+login varchar(255) not NULL unique,
+username varchar(255) not NULL unique);
+
+create table users_to_roles(
+user_id int not null,
+role_id int not null,
+primary key (user_id, role_id),
+foreign key (user_id) references users(id) on delete cascade,
+foreign key (role_id) references roles(id) on delete cascade);
+
